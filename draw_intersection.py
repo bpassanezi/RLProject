@@ -3,87 +3,114 @@ import matplotlib.patches as patches
 import numpy as np
 
 def draw_intersection(save_path='intersection_diagram.png'):
+    # Create the figure
     fig, ax = plt.subplots(figsize=(10, 10))
     ax.set_aspect('equal')
     ax.set_xlim(0, 300)
     ax.set_ylim(0, 300)
     
-    # Grid and background
+    # Grid and background styling
     ax.set_facecolor('#F0F0F0')
     ax.grid(True, which='both', linestyle='--', color='lightgray', alpha=0.5)
     ax.set_xticks(np.arange(0, 301, 50))
     ax.set_yticks(np.arange(0, 301, 50))
     
-    # 1. Road Structure
-    road_width = 14.4  # Based on 2 lanes * ~7.2m (SUMO default/lane structure)
+    # 1. Road Geometry
+    road_width = 14.4  
     half_width = road_width / 2
     
-    # Horizontal Road
+    # Gray asphalt for Horizontal and Vertical roads
     ax.add_patch(patches.Rectangle((0, 150 - half_width), 142.8, road_width, color='gray', alpha=0.8, zorder=0))
     ax.add_patch(patches.Rectangle((157.2, 150 - half_width), 142.8, road_width, color='gray', alpha=0.8, zorder=0))
-    
-    # Vertical Road
     ax.add_patch(patches.Rectangle((150 - half_width, 0), road_width, 142.8, color='gray', alpha=0.8, zorder=0))
     ax.add_patch(patches.Rectangle((150 - half_width, 157.2), road_width, 142.8, color='gray', alpha=0.8, zorder=0))
     
-    # Central Junction box
+    # Central Junction Box (Node T)
     ax.add_patch(patches.Rectangle((150 - half_width, 150 - half_width), road_width, road_width, color='darkgray', zorder=1))
     
-    # Lane lines (center dashed)
-    ax.plot([0, 142.8],color='white', linestyle='--', linewidth=2, zorder=2)
-    ax.plot([157.2, 300], color='white', linestyle='--', linewidth=2, zorder=2)
-    ax.plot([0, 142.8], color='white', linestyle='--', linewidth=2, zorder=2)
-    ax.plot([157.2, 300], color='white', linestyle='--', linewidth=2, zorder=2)
+    # --- FIXED LANE LINES (Verified X and Y arrays) ---
+    # Horizontal lines
+    ax.plot([0, 142.8], [150, 150], color='white', linestyle='--', linewidth=2, zorder=2)
+    ax.plot([157.2, 300], [150, 150], color='white', linestyle='--', linewidth=2, zorder=2)
     
-    # 2. Add Node Labels
-    nodes = {'t': (150, 150), 'n': (150, 290), 's': (150, 10), 'e': (290, 150), 'w': (10, 150)}
+    # Vertical lines
+    ax.plot([150, 150], [0, 142.8], color='white', linestyle='--', linewidth=2, zorder=2)
+    ax.plot([150, 150], [157.2, 300], color='white', linestyle='--', linewidth=2, zorder=2)
+    
+    # 2. Node Labels (N, S, E, W, T)
+    nodes = {
+        # 't': (150, 150),
+    'n': (150, 290), 's': (150, 10), 'e': (290, 150), 'w': (10, 150)}
     for name, pos in nodes.items():
-        circle = patches.Circle(pos, 5, color='black', ec='white', linewidth=2, zorder=5)
+        circle = patches.Circle(pos, 8, color='black', ec='white', linewidth=2, zorder=5)
         ax.add_patch(circle)
-        ax.text(pos, pos, name.upper(), fontsize=16, fontweight='bold', color='white', ha='center', va='center', zorder=6)
+        ax.text(pos[0], pos[1], name.upper(), fontsize=14, fontweight='bold', color='white', ha='center', va='center', zorder=6)
         
-    # Add Edge Labels
-    ax.text(150, 216.4, 'n_t / t_n\n(142.8m)', ha='center', va='center', rotation=90)
-    ax.text(150, 83.6, 's_t / t_s\n(142.8m)', ha='center', va='center', rotation=90)
-    ax.text(223.6, 150, 'e_t / t_e (142.8m)', ha='center', va='center')
-    ax.text(76.4, 150, 'w_t / t_w (142.8m)', ha='center', va='center')
+    # Edge Labels
+    ax.text(150, 220, 'n_t / t_n\n(142.8m)', ha='center', va='center', rotation=90, fontsize=10)
+    ax.text(150, 80, 's_t / t_s\n(142.8m)', ha='center', va='center', rotation=90, fontsize=10)
+    ax.text(225, 150, 'e_t / t_e (142.8m)', ha='center', va='center', fontsize=10)
+    ax.text(75, 150, 'w_t / t_w (142.8m)', ha='center', va='center', fontsize=10)
     
-    # 3. Permitted Flows (Arrows for one approach - North to simplify)
-    arrow_props = dict(arrowstyle='-|>', mutation_scale=20, color='blue', linewidth=2.5, zorder=4)
-    start_point = (150, 160) # Just inside junction from North
+    # 3. Permitted Flows (Blue Arrows)
+    arrow_props = dict(arrowstyle='-|>', mutation_scale=20, color='blue', linewidth=2, zorder=4)
+    start_pt = (150, 165)
     
-    # North straight to South
-    ax.add_patch(patches.FancyArrowPatch(start_point, (150, 140), **arrow_props))
-    # North right to West
-    ax.add_patch(patches.FancyArrowPatch(start_point, (140, 150), connectionstyle="arc3,rad=.3", **arrow_props))
-    # North left to East
-    ax.add_patch(patches.FancyArrowPatch(start_point, (160, 150), connectionstyle="arc3,rad=-.3", **arrow_props))
+    # Straight, Right, Left
+
+    # ax.add_patch(patches.FancyArrowPatch(start_pt, (150, 135), **arrow_props))
     
-    # Label flows
-    ax.text(150, 170, 'Permitted:\nS, R, L', color='blue', fontweight='bold', ha='center')
+    # ax.add_patch(patches.FancyArrowPatch(start_pt, (135, 150), connectionstyle="arc3,rad=.3", **arrow_props))
+    # ax.add_patch(patches.FancyArrowPatch(start_pt, (165, 150), connectionstyle="arc3,rad=-.3", **arrow_props))
     
-    # 4. Prohibited Flow (U-Turn for North)
-    u_arrow_props = dict(arrowstyle='-|>', mutation_scale=25, color='red', linewidth=3, zorder=4)
+    # 3. Traffic Movements (The 12 Directions)
+    # Format: (start_x, start_y, end_x, end_y, curvature_rad)
+    movements = [
+        # From North (Entering at 150, 165)
+        (150, 165, 150, 135, 0),    # Straight to S
+        (150, 165, 135, 150, 0.3),  # Right to W
+        (150, 165, 165, 150, -0.3), # Left to E
+        # From South (Entering at 150, 135)
+        (150, 135, 150, 165, 0),    # Straight to N
+        (150, 135, 165, 150, 0.3),  # Right to E
+        (150, 135, 135, 150, -0.3), # Left to W
+        # From West (Entering at 135, 150)
+        (135, 150, 165, 150, 0),    # Straight to E
+        (135, 150, 150, 165, 0.3),  # Right to N
+        (135, 150, 150, 135, -0.3), # Left to S
+        # From East (Entering at 165, 150)
+        (165, 150, 135, 150, 0),    # Straight to W
+        (165, 150, 150, 135, 0.3),  # Right to S
+        (165, 150, 150, 165, -0.3), # Left to N
+    ]
+
+    for sx, sy, ex, ey, rad in movements:
+        color = 'blue' if rad == 0 else 'green' if rad > 0 else 'orange'
+        style = f"arc3,rad={rad}"
+        arrow = patches.FancyArrowPatch((sx, sy), (ex, ey), connectionstyle=style,
+                                        arrowstyle='-|>', mutation_scale=15, 
+                                        color=color, linewidth=1.5, alpha=0.6, zorder=4)
+        ax.add_patch(arrow)
+
+    # Legend for the directions
+    ax.text(10, 280, "■ Straight (N-S / E-W)", color='blue', fontweight='bold')
+    ax.text(10, 270, "■ Right Turns", color='green', fontweight='bold')
+    ax.text(10, 260, "■ Left Turns", color='orange', fontweight='bold')
     
-    # U-turn logic arc
-    ax.add_patch(patches.FancyArrowPatch((147, 162), (153, 162), connectionstyle="arc3,rad=3.0", **u_arrow_props))
+    # # 4. Prohibited U-Turn (Red Slash and Arrow)
+    # u_props = dict(arrowstyle='-|>', mutation_scale=20, color='red', linewidth=2, zorder=4)
+    # ax.add_patch(patches.FancyArrowPatch((146, 165), (154, 165), connectionstyle="arc3,rad=3.5", **u_props))
     
-    # Prohibitory symbol (No U-Turn)
-    # Prohibitory sign with explicit size relative to axes
-    ax.add_patch(patches.Circle((150, 185), 7, color='red', fill=False, linewidth=4, zorder=10))
-    # ax.plot(,, color='red', linewidth=4, zorder=11)
-    ax.text(150, 178, 'U-Turns\nProhibited', color='red', fontsize=12, fontweight='bold', ha='center')
+    # The "No" Sign
+    # ax.add_patch(patches.Circle((150, 195), 8, color='red', fill=False, linewidth=3, zorder=10))
+    # ax.plot([144, 156], [201, 189], color='red', linewidth=3, zorder=11)
     
-    plt.title('Thesis Intersection Schematic: Allowed Movements and Prohibitions', fontsize=18)
-    plt.xlabel('X (meters)')
-    plt.ylabel('Y (meters)')
+    ax.set_title('Thesis Intersection Geometry & Allowed Movements', fontsize=16, pad=20)
+    ax.set_xlabel('X (meters)')
+    ax.set_ylabel('Y (meters)')
     
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
-    print(f"Generated diagram: {save_path}")
-    plt.close()
+    plt.show()
 
 if __name__ == "__main__":
-    try:
-        draw_intersection()
-    except Exception as e:
-        print(f"Error generating diagram: {e}")
+    draw_intersection()
