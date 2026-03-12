@@ -9,37 +9,22 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.callbacks import BaseCallback
 
 # --- 1. SYSTEM CONFIG ---
-os.environ['SUMO_HOME'] = "/opt/homebrew/opt/sumo/share/sumo"
-sys.path.append(os.path.join(os.environ['SUMO_HOME'], 'tools'))
-import os
-import sys
-import gymnasium as gym
-import sumo_rl
-import numpy as np
-import pandas as pd
-from stable_baselines3 import DQN, A2C
-from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.callbacks import BaseCallback
+if 'SUMO_HOME' not in os.environ:
+    os.environ['SUMO_HOME'] = "/opt/homebrew/opt/sumo/share/sumo"
+if os.path.join(os.environ['SUMO_HOME'], 'tools') not in sys.path:
+    sys.path.append(os.path.join(os.environ['SUMO_HOME'], 'tools'))
 
-# --- 1. SYSTEM CONFIG ---
-# Update these paths to match your specific Miniconda/Homebrew setup
-os.environ['SUMO_HOME'] = "/opt/homebrew/opt/sumo/share/sumo"
-sys.path.append(os.path.join(os.environ['SUMO_HOME'], 'tools'))
-
-# SETTINGS
-TEST_MODE = True  # Set to False for final 36,000 step run
-TOTAL_STEPS = 500 if TEST_MODE else 36000
-NET_FILE = './nets/single-intersection.net.xml'
-ROUTE_FILE = './nets/adaptive.rou.xml'
 class RLTrafficCallback(BaseCallback):
     """
     Custom Logger to capture Value Function, Optimum Policy, 
     and Environment metrics (Queues, Emissions).
     """
-    def __init__(self, algo_name, experiment_type, verbose=0):
+    def __init__(self, algo_name, experiment_type, use_random_routes=False, route_file=None, verbose=0):
         super(RLTrafficCallback, self).__init__(verbose)
         self.algo_name = algo_name
         self.experiment_type = experiment_type
+        self.use_random_routes = use_random_routes
+        self.route_file = route_file
         self.data_log = []
         self.episode_count = 1
 
@@ -75,7 +60,7 @@ class RLTrafficCallback(BaseCallback):
             # 2. CAPTURE ENVIRONMENT METRICS
             info = self.locals['infos']
 
-            # CRITICAL FIX: If obs is a tuple (obs, info), take only the first element
+            # CRITICAL FIX: If info is a list, take only the first element
             if isinstance(info, list):
                 info = info[0]
             
@@ -93,6 +78,10 @@ class RLTrafficCallback(BaseCallback):
 
         if self.locals['dones']:
             self.episode_count += 1
+            # If randomized routes are enabled, regenerate the route file for the next episode
+            if self.use_random_routes and self.route_file:
+                from routes_generator import generate_randomized_routes
+                generate_randomized_routes(self.route_file)
 
         return True
 
