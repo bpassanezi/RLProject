@@ -16,7 +16,7 @@ def generate_randomized_routes(filepath="nets/random_routes.rou.xml", max_steps=
     
     # Randomize the intensity of the spike
     # Probability of a car spawning per second (0.4 to 0.7 is very heavy traffic)
-    spike_prob = round(random.uniform(0.4, 0.7), 2) 
+    spike_prob = round(random.uniform(0.5, 0.9), 2) 
 
     # Baseline traffic probability (steady, light traffic)
     base_prob = 0.1 
@@ -35,10 +35,10 @@ def generate_randomized_routes(filepath="nets/random_routes.rou.xml", max_steps=
         routes.write('    <route id="W_E" edges="w_t t_e"/>\n\n')
         
         # --- BASELINE FLOWS (Constant light traffic for all 4 directions) ---
-        routes.write(f'    <flow id="base_NS" route="N_S" begin="0" end="{max_steps}" probability="{base_prob}" type="car"/>\n')
-        routes.write(f'    <flow id="base_SN" route="S_N" begin="0" end="{max_steps}" probability="{base_prob}" type="car"/>\n')
-        routes.write(f'    <flow id="base_EW" route="E_W" begin="0" end="{max_steps}" probability="{base_prob}" type="car"/>\n')
-        routes.write(f'    <flow id="base_WE" route="W_E" begin="0" end="{max_steps}" probability="{base_prob}" type="car"/>\n\n')
+        routes.write(f'    <flow id="base_NS" route="N_S" begin="0" end="{max_steps}" vehsPerHour="1000" type="car"/>\n')
+        routes.write(f'    <flow id="base_SN" route="S_N" begin="0" end="{max_steps}" vehsPerHour="1000" type="car"/>\n')
+        routes.write(f'    <flow id="base_EW" route="E_W" begin="0" end="{max_steps}" vehsPerHour="1000" type="car"/>\n')
+        routes.write(f'    <flow id="base_WE" route="W_E" begin="0" end="{max_steps}" vehsPerHour="1000" type="car"/>\n\n')
         
         # --- THE RANDOMIZED ADAPTIVE SPIKE ---
         if spike_axis == "EW":

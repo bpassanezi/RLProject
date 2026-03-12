@@ -22,7 +22,7 @@ if os.path.join(os.environ['SUMO_HOME'], 'tools') not in sys.path:
 def run_experiment(algo_type, route_file, experiment_type, use_random_routes=False, TEST_MODE=False):
 
     # total number of steps the agent take, each step is one decision
-    TOTAL_STEPS = 3600 if TEST_MODE else 36000
+    TOTAL_STEPS = 3600 if TEST_MODE else 18000
 
     log_dir = f"./logs/{algo_type}/"
     os.makedirs(log_dir, exist_ok=True)
@@ -34,7 +34,7 @@ def run_experiment(algo_type, route_file, experiment_type, use_random_routes=Fal
     env = gym.make('sumo-rl-v0', 
                    net_file='./nets/single-intersection.net.xml', 
                    route_file=route_file, 
-                   use_gui=False, 
+                   use_gui=True, 
                    delta_time=5,
                    num_seconds=3600, # time taken for 1 simulation
                    add_system_info=True)

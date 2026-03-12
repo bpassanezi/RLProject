@@ -1,0 +1,17 @@
+<routes>
+    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="15"/>
+
+    <route id="N_S" edges="n_t t_s"/>
+    <route id="S_N" edges="s_t t_n"/>
+    <route id="E_W" edges="e_t t_w"/>
+    <route id="W_E" edges="w_t t_e"/>
+
+    <flow id="base_NS" route="N_S" begin="0" end="3600" probability="0.1" type="car"/>
+    <flow id="base_SN" route="S_N" begin="0" end="3600" probability="0.1" type="car"/>
+    <flow id="base_EW" route="E_W" begin="0" end="3600" probability="0.1" type="car"/>
+    <flow id="base_WE" route="W_E" begin="0" end="3600" probability="0.1" type="car"/>
+
+    
+    <flow id="spike_EW" route="E_W" begin="1383" end="2490" probability="0.55" type="car"/>
+    <flow id="spike_WE" route="W_E" begin="1383" end="2490" probability="0.55" type="car"/>
+</routes>
