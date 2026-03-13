@@ -1,9 +1,0 @@
-<routes>
-    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="13.9" guiShape="passenger"/>
-
-    <flow id="flow_ns" type="car" begin="0" end="3600" vehsPerHour="500" from="n_t" to="t_s"/>
-    <flow id="flow_sn" type="car" begin="0" end="3600" vehsPerHour="500" from="s_t" to="t_n"/>
-    
-    <flow id="flow_ew" type="car" begin="0" end="3600" vehsPerHour="500" from="e_t" to="t_w"/>
-    <flow id="flow_we" type="car" begin="0" end="3600" vehsPerHour="500" from="w_t" to="t_e"/>
-</routes>

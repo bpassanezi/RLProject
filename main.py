@@ -16,13 +16,13 @@ if os.path.join(os.environ['SUMO_HOME'], 'tools') not in sys.path:
 # Run Stationary Experiments (using static baseline routes)
 # These files should exist in the nets/ directory
 # run_experiment("DQN", "nets/single-intersection-low-traffic.rou.xml", "stationary_low_traffic", use_random_routes=False, TEST_MODE=TEST_MODE)
-run_experiment("DQN", "nets/single-intersection-high-traffic.rou.xml", "stationary_high_traffic", use_random_routes=False, TEST_MODE=TEST_MODE)
+# run_experiment("DQN", "nets/single-intersection-high-traffic.rou.xml", "stationary_high_traffic", use_random_routes=False, TEST_MODE=TEST_MODE)
 
 
 # 2.1 Run Adaptive Experiments (using the random routes generator)
 
 
 # This will regenerate traffic patterns every episode to prevent overfitting
-# run_experiment("DQN", "nets/single-intersection-random.rou.xml", "adaptive_random", use_random_routes=True, TEST_MODE=TEST_MODE)
-# run_experiment("SARSA", "nets/single-intersection-random.rou.xml", "adaptive_random", use_random_routes=True, TEST_MODE=TEST_MODE)
+run_experiment("DQN", "nets/single-intersection-random.rou.xml", "adaptive_random", use_random_routes=True, TEST_MODE=TEST_MODE)
+run_experiment("A2C", "nets/single-intersection-random.rou.xml", "adaptive_random", use_random_routes=True, TEST_MODE=TEST_MODE)
 

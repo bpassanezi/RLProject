@@ -9,6 +9,7 @@ def generate_randomized_routes(filepath="nets/random_routes.rou.xml", max_steps=
     # 1. Randomize the Spike Parameters every episode
     spike_start = random.randint(400, 1500)       # Spike starts anywhere between 400s and 1500s
     spike_duration = random.randint(600, 1200)    # Lasts between 10 to 20 minutes
+    spike_size = random.randint(500, 2000)
     spike_end = min(spike_start + spike_duration, max_steps)
     
     # Randomize which direction gets hit with the heavy traffic
@@ -43,12 +44,12 @@ def generate_randomized_routes(filepath="nets/random_routes.rou.xml", max_steps=
         # --- THE RANDOMIZED ADAPTIVE SPIKE ---
         if spike_axis == "EW":
             routes.write(f'    \n')
-            routes.write(f'    <flow id="spike_EW" route="E_W" begin="{spike_start}" end="{spike_end}" probability="{spike_prob}" type="car"/>\n')
-            routes.write(f'    <flow id="spike_WE" route="W_E" begin="{spike_start}" end="{spike_end}" probability="{spike_prob}" type="car"/>\n')
+            routes.write(f'    <flow id="spike_EW" route="E_W" begin="{spike_start}" end="{spike_end}" vehsPerHour="{spike_size}" type="car"/>\n')
+            routes.write(f'    <flow id="spike_WE" route="W_E" begin="{spike_start}" end="{spike_end}" vehsPerHour="{spike_size}" type="car"/>\n')
         else:
             routes.write(f'    \n')
-            routes.write(f'    <flow id="spike_NS" route="N_S" begin="{spike_start}" end="{spike_end}" probability="{spike_prob}" type="car"/>\n')
-            routes.write(f'    <flow id="spike_SN" route="S_N" begin="{spike_start}" end="{spike_end}" probability="{spike_prob}" type="car"/>\n')
+            routes.write(f'    <flow id="spike_NS" route="N_S" begin="{spike_start}" end="{spike_end}" vehsPerHour="{spike_size}" type="car"/>\n')
+            routes.write(f'    <flow id="spike_SN" route="S_N" begin="{spike_start}" end="{spike_end}" vehsPerHour="{spike_size}" type="car"/>\n')
             
         routes.write('</routes>\n')
         
