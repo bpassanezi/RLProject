@@ -3,7 +3,7 @@ import sys
 from experiment_setup import run_experiment
 
 # SETTINGS
-TEST_MODE = True  # Set to False for long training sessions
+TEST_MODE = False  # Set to False for long training sessions
 
 # --- 1. SYSTEM CONFIG ---
 if 'SUMO_HOME' not in os.environ:
@@ -16,9 +16,9 @@ if os.path.join(os.environ['SUMO_HOME'], 'tools') not in sys.path:
 # run_experiment("DQN", "nets/single-intersection-high-traffic.rou.xml", "high_traffic", use_random_routes=False, is_baseline=True, TEST_MODE=TEST_MODE)
 # run_experiment("DQN", "nets/single-intersection-low-traffic.rou.xml", "low_traffic", use_random_routes=False, is_baseline=True, TEST_MODE=TEST_MODE)
 
-# print("\n--- STAGE 2: STATIONARY TRAFFIC DQN ---")
-# run_experiment("DQN", "nets/single-intersection-high-traffic.rou.xml", "high_traffic", use_random_routes=False, is_baseline=False, TEST_MODE=TEST_MODE)
-# run_experiment("DQN", "nets/single-intersection-low-traffic.rou.xml", "low_traffic", use_random_routes=False, is_baseline=False, TEST_MODE=TEST_MODE)
+print("\n--- STAGE 2: STATIONARY TRAFFIC DQN ---")
+run_experiment("DQN", "nets/single-intersection-high-traffic.rou.xml", "high_traffic", use_random_routes=False, is_baseline=False, TEST_MODE=TEST_MODE)
+run_experiment("DQN", "nets/single-intersection-low-traffic.rou.xml", "low_traffic", use_random_routes=False, is_baseline=False, TEST_MODE=TEST_MODE)
 
 
 # 2.2 Adaptive Experiments (Standard training)
