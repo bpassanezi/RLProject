@@ -12,6 +12,6 @@
     <flow id="base_WE" route="W_E" begin="0" end="3600" vehsPerHour="1000" type="car"/>
 
     
-    <flow id="spike_EW" route="E_W" begin="1272" end="2289" vehsPerHour="1943" type="car"/>
-    <flow id="spike_WE" route="W_E" begin="1272" end="2289" vehsPerHour="1943" type="car"/>
+    <flow id="spike_NS" route="N_S" begin="1240" end="2145" vehsPerHour="1003" type="car"/>
+    <flow id="spike_SN" route="S_N" begin="1240" end="2145" vehsPerHour="1003" type="car"/>
 </routes>

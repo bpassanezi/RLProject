@@ -20,50 +20,62 @@ class RLTrafficCallback(BaseCallback):
         self.episode_count = 1
 
     def _on_step(self) -> bool:
-        # Log every 10 steps
-        if self.n_calls % 10 == 0:
-            obs = self.locals['new_obs']
+        # 1. HANDLE VARIABLE ACCESS (Check if we are in SB3 learn() or a manual loop)
+        # Use .get() to avoid KeyErrors
+        infos = self.locals.get('infos')
+        rewards = self.locals.get('rewards')
+        dones = self.locals.get('dones')
+        new_obs = self.locals.get('new_obs')
+        actions = self.locals.get('actions')
 
-            # Extract the single observation from the Vectorized Environment
+        # If these are missing, we are in the Baseline manual loop
+        # We try to grab them from the local scope of the run_experiment function
+        if infos is None:
+            # Pulling from the loop variables we set in run_experiment
+            info = self.locals.get('info')
+            reward = self.locals.get('reward')
+            done = self.locals.get('terminated') or self.locals.get('truncated')
+            obs = self.locals.get('obs')
+            action = self.locals.get('action') # or 0
+        else:
+            # Standard SB3 Vectorized Env access
+            info = infos[0]
+            reward = rewards[0]
+            done = dones[0]
+            obs = new_obs
+            action = actions[0]
+
+        # Log every 10 steps
+        if self.n_calls % 10 == 0 and obs is not None:
+            # Standard logic for Value Function
             if isinstance(obs, tuple):
                 obs = obs[0]
             
-            # obs_to_tensor returns (tensor, vectorized_env), so we take [0]
             obs_tensor = self.model.policy.obs_to_tensor(obs)[0]
             
-            # 1. ESTIMATE VALUE FUNCTION V(s) & POLICY
             if isinstance(self.model, DQN):
                 q_values = self.model.q_net(obs_tensor)
-                # Use .item() to extract clean scalars for plotting
                 value_est = q_values.max().item()
                 policy_choice = q_values.argmax().item()
             else:
-                # A2C
                 value_est = self.model.policy.predict_values(obs_tensor).item()
-                distribution = self.model.policy.get_distribution(obs_tensor)
-                probs = distribution.distribution.probs
-                policy_choice = probs.argmax().item()
+                policy_choice = self.model.policy.get_distribution(obs_tensor).distribution.probs.argmax().item()
 
-            # 2. CAPTURE ENVIRONMENT METRICS
-            info = self.locals['infos'][0] # Unpack from VecEnv array
-            
             self.data_log.append({
                 "episode": self.episode_count,
                 "step": self.n_calls,
                 "value_estimate": value_est,
                 "optimum_action": policy_choice,
-                "reward": self.locals['rewards'][0], # Unpack from VecEnv array
-                "avg_waiting_time": info.get('system_mean_waiting_time', 0),
-                "total_stopped": info.get('system_total_stopped', 0),
-                "co2_emissions": info.get('system_total_abs_co2_emission', 0),
-                "actual_action": self.locals['actions'][0] # Unpack from VecEnv array
+                "reward": reward if reward is not None else 0,
+                "avg_waiting_time": info.get('system_mean_waiting_time', 0) if info else 0,
+                "total_stopped": info.get('system_total_stopped', 0) if info else 0,
+                "co2_emissions": info.get('system_total_abs_co2_emission', 0) if info else 0,
+                "actual_action": action if action is not None else 0
             })
 
-        # 3. EPISODE END LOGIC & ROUTE GENERATION
-        if self.locals['dones'][0]:
+        # 3. EPISODE END LOGIC
+        if done:
             self.episode_count += 1
-            
-            # Generate the randomized routes for the next upcoming episode
             if self.use_random_routes and self.route_file:
                 from routes_generator import generate_randomized_routes
                 if self.episode_count % 5 == 0:
